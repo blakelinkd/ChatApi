@@ -1,0 +1,22 @@
+@ChatApi_HostAddress = https://localhost:7190
+
+GET {{ChatApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+
+
+GET {{ChatApi_HostAddress}}/chatbot
+
+###
+
+POST {{ChatApi_HostAddress}}/chatbot
+Content-Type: application/json
+Accept: application/json
+
+{
+  "message": "string"
+}
+
+###

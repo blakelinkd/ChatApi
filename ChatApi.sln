@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatApi", "ChatApi\ChatApi.csproj", "{6FF96C76-794E-4450-931B-CE97D311096B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApi.Test", "ChatApi.Test\ChatApi.Test.csproj", "{EFBB3832-7D91-4896-B093-C9AE7944E939}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6FF96C76-794E-4450-931B-CE97D311096B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FF96C76-794E-4450-931B-CE97D311096B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FF96C76-794E-4450-931B-CE97D311096B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FF96C76-794E-4450-931B-CE97D311096B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFBB3832-7D91-4896-B093-C9AE7944E939}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFBB3832-7D91-4896-B093-C9AE7944E939}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFBB3832-7D91-4896-B093-C9AE7944E939}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFBB3832-7D91-4896-B093-C9AE7944E939}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {86A222F4-49CD-4437-B127-1B157C3CEE7B}
+	EndGlobalSection
+EndGlobal
