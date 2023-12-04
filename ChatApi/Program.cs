@@ -19,7 +19,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins, builder =>
     {
-        builder.WithOrigins("http://192.168.0.165:4200") // Replace with your Angular app's URL
+        builder.WithOrigins("https://blakelink.us") // Replace with your Angular app's URL
                .AllowAnyHeader()
                .AllowAnyMethod()
                .AllowCredentials(); // Add this if you're using credentials
@@ -35,7 +35,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection(); // Remove this line to disable HTTPS redirection
+app.UseHttpsRedirection(); // Remove this line to disable HTTPS redirection
 app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
