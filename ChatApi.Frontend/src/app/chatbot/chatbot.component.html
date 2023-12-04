@@ -1,7 +1,9 @@
 <div>
   <ul class="messages">
     <li #message *ngFor="let message of messages">
-      <span [style.color]="getUserIdColor(message.senderId)">{{ message.senderId }}</span>: {{ message.content.text }}
+      <span [style.color]="message.senderId === 'system' ? 'gray' : getUserIdColor(message.senderId)">
+        {{ message.userName ? message.userName : message.senderId }}
+      </span>: {{ message.content.text }}
     </li>
   </ul>
 

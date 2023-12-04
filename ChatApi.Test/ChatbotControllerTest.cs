@@ -51,7 +51,7 @@ namespace ChatApi.Tests.Controllers
             // Arrange
             var controller = new ChatbotController(loggerMock.Object, redisMultiplexerMock.Object);
             var serializedMessage = JsonSerializer.Serialize(testMessage);
-            
+
             // Act
             var result = controller.Post(testMessage);
 
@@ -127,7 +127,79 @@ namespace ChatApi.Tests.Controllers
             // Additional assertions as needed
         }
 
+        [Fact]
+        public void GetMessagesBySenderId_ReturnsCorrectMessages()
+        {
+            // Arrange
+            var controller = new ChatbotController(loggerMock.Object, redisMultiplexerMock.Object);
+            var senderId = "123";
 
+            // Create test messages
+            var testMessages = new List<Message>
+    {
+        new Message { SenderId = "123", Content = new MessageContent { Text = "Message 1" } },
+        new Message { SenderId = "456", Content = new MessageContent { Text = "Message 2" } },
+        new Message { SenderId = "123", Content = new MessageContent { Text = "Message 3" } }
+    };
+
+            // Serialize test messages to JSON strings
+            var serializedMessages = testMessages.Select(message => JsonSerializer.Serialize(message));
+
+            // Mock the Redis database to simulate messages in the queue
+            redisDbMock.Setup(db => db.ListRange("messageQueue", 0, -1, CommandFlags.None))
+                       .Returns(() => serializedMessages.Select(message => (RedisValue)message).ToArray());
+
+            // Act
+            var actionResult = controller.GetMessagesBySenderId(senderId);
+
+            // Assert
+            Assert.NotNull(actionResult);
+            Assert.Equal(2, actionResult.Value.Count);
+
+            // Verify message content
+            Assert.Equal("Message 1", actionResult.Value[0].Content.Text);
+            Assert.Equal("Message 3", actionResult.Value[1].Content.Text);
+
+            // Verify senderId
+            Assert.All(actionResult.Value, msg => Assert.Equal(senderId, msg.SenderId));
+        }
+
+        [Fact]
+        public void GetMessagesByThreadId_ReturnsCorrectMessages()
+        {
+            // Arrange
+            var controller = new ChatbotController(loggerMock.Object, redisMultiplexerMock.Object);
+            var threadId = "abc123";
+
+            // Create test messages
+            var testMessages = new List<Message>
+            {
+                new Message { ThreadId = "abc123", Content = new MessageContent { Text = "Message 1" } },
+                new Message { ThreadId = "def456", Content = new MessageContent { Text = "Message 2" } },
+                new Message { ThreadId = "abc123", Content = new MessageContent { Text = "Message 3" } }
+            };
+
+            // Serialize test messages to JSON strings
+            var serializedMessages = testMessages.Select(message => JsonSerializer.Serialize(message));
+
+            // Mock the Redis database to simulate messages in the queue
+            redisDbMock.Setup(db => db.ListRange("messageQueue", 0, -1, CommandFlags.None))
+                       .Returns(() => serializedMessages.Select(message => (RedisValue)message).ToArray());
+
+            // Act
+            var actionResult = controller.GetMessagesByThreadId(threadId);
+
+            // Assert
+            Assert.NotNull(actionResult);
+            Assert.Equal(2, actionResult.Value.Count);
+
+            // Verify message content
+            Assert.Equal("Message 1", actionResult.Value[0].Content.Text);
+            Assert.Equal("Message 3", actionResult.Value[1].Content.Text);
+
+            // Verify threadId
+            Assert.All(actionResult.Value, msg => Assert.Equal(threadId, msg.ThreadId));
+        }
 
 
 

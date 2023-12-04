@@ -20,11 +20,15 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   messages: Message[] = [];
   newMessage: string = '';
   userName: string = '';
+  threadId: any = '';
+  systemMessageSent: boolean = false;
   messageForm!: FormGroup; // Add the definite assignment assertion operator (!) to indicate that the property will be initialized in the constructor
   nameForm!: FormGroup; // Add the definite assignment assertion operator (!) to indicate that the property will be initialized in the constructor
   title = 'chatbot';
 
   constructor(private fb: FormBuilder, private http: HttpClient, private store: Store<AppState>) {
+    this.threadId = localStorage.getItem('threadId') || uuidv4();
+    this.systemMessageSent = false;
     this.messageForm = this.fb.group({
       newMessage: ['', Validators.required]
     });
@@ -52,6 +56,10 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
       messagesContainer.addEventListener('scroll', () => {
         this.userHasScrolled = true;
       });
+    if (!this.systemMessageSent) {
+      this.addSystemMessage('Welcome! You can set your username by typing "/name [your desired name]".');
+      this.systemMessageSent = true;
+    }
     }
     
     console.info("User has entered the chatbot component")
@@ -64,6 +72,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   this.store.select((state: any) => state.message).subscribe(messages => {
     this.messages = [...messages].reverse();
 
+    
   });
   }
 
@@ -97,8 +106,30 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
       alert('Please enter a message');
       return;
     }
-
+  
+    // Check if the message starts with "/login"
+    if (this.newMessage.startsWith('/login')) {
+      const parts = this.newMessage.split(' ');
+      if (parts.length === 3 && parts[1] === 'blake' && parts[2] === 'MustardAndBuns') {
+        localStorage.setItem('senderId', '4242');
+        localStorage.setItem('userName', 'Blake');
+        this.addSystemMessage('Login successful.');
+        return;
+      }
+    }
+  
+    // Check if the message starts with "/name"
+    if (this.newMessage.startsWith('/name')) {
+      const parts = this.newMessage.split(' ');
+      if (parts.length === 2) {
+        localStorage.setItem('userName', parts[1]);
+        this.addSystemMessage(`Name changed to ${parts[1]}.`);
+        return;
+      }
+    }
+  
     const senderId = localStorage.getItem('senderId') || uuidv4();
+    const userName = localStorage.getItem('userName') || '';
     const message: Message = {
       messageId: uuidv4(),
       senderId: senderId,
@@ -106,10 +137,9 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
         text: this.newMessage,
         attachments: [] // Set attachments to an empty array if there are no attachments
       },
-      timestamp: new Date().toISOString() // Use the current date and time as the timestamp
-      ,
-      threadId: '',
-      userName: '',
+      timestamp: new Date().toISOString(), // Use the current date and time as the timestamp
+      threadId: this.threadId,
+      userName: userName,
       recipientId: '',
       status: '',
       responseTo: ''
@@ -118,19 +148,41 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     // Dispatch the action to create a new message
     this.store.dispatch(MessageActions.createMessage({ message }));
     this.http.post(environment.postEndpoint, message).subscribe();
-
+  
     // Clear the newMessage property to reset the input field
     this.newMessage = '';
+  }
+
+  addSystemMessage(content: string) {
+    const message: Message = {
+      messageId: uuidv4(),
+      senderId: 'system',
+      content: {
+        text: content,
+        attachments: []
+      },
+      timestamp: new Date().toISOString(),
+      threadId: this.threadId,
+      userName: 'System',
+      recipientId: '',
+      status: '',
+      responseTo: ''
+    };
+    this.store.dispatch(MessageActions.createMessage({ message }));
+    this.http.post(environment.postEndpoint, message).subscribe();
   }
 
   pollMessages() {
     interval(1000)
       .pipe(
+        // switchMap(() => this.http.get<Message[]>(environment.getByIdEndpoint + '/' + this.threadId))
         switchMap(() => this.http.get<Message[]>(environment.getEndpoint))
+
       )
       .subscribe((messages: Message[]) => {
         // Dispatch the action to load the fetched messages
         this.store.dispatch(MessageActions.loadMessages({ messages }));
+        console.log('messages recieved' + messages);
 
       });
   }

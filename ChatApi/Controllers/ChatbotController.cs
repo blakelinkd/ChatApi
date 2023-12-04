@@ -36,22 +36,62 @@ namespace ChatApi.Controllers
             return Ok();
         }
         [HttpGet("message/get")]
-public ActionResult<List<Message>> GetMessageQueue()
-{
-    var messages = new List<Message>();
-    var messageStrings = _redisDatabase.ListRange("messageQueue");
-
-    foreach (var messageString in messageStrings)
-    {
-        var message = System.Text.Json.JsonSerializer.Deserialize<Message>(messageString);
-        if (message != null)
+        public ActionResult<List<Message>> GetMessageQueue()
         {
-            messages.Add(message);
-        }
-    }
+            var messages = new List<Message>();
+            var messageStrings = _redisDatabase.ListRange("messageQueue");
 
-    return Ok(messages);
-}
+            foreach (var messageString in messageStrings)
+            {
+                var message = System.Text.Json.JsonSerializer.Deserialize<Message>(messageString);
+                if (message != null)
+                {
+                    messages.Add(message);
+                }
+            }
+
+            return Ok(messages);
+        }
+
+        [HttpGet("message/getBySenderId/{senderId}")]
+        public ActionResult<List<Message>> GetMessagesBySenderId(string senderId)
+        {
+            var messages = new List<Message>();
+            var messageStrings = _redisDatabase.ListRange("messageQueue");
+
+            foreach (var messageString in messageStrings)
+            {
+                var message = System.Text.Json.JsonSerializer.Deserialize<Message>(messageString);
+                if (message != null && message.SenderId == senderId)
+                {
+                    messages.Add(message);
+                }
+            }
+
+            return messages;
+        }
+
+        [HttpGet("message/getByThreadId/{threadId}")]
+    public ActionResult<List<Message>> GetMessagesByThreadId(string threadId)
+    {
+        _logger.LogInformation($"Incoming request to endpoint: /message/getByThreadId/{threadId}");
+
+        var messages = new List<Message>();
+        var messageStrings = _redisDatabase.ListRange("messageQueue");
+
+        foreach (var messageString in messageStrings)
+        {
+            var message = System.Text.Json.JsonSerializer.Deserialize<Message>(messageString);
+            if (message != null && message.ThreadId == threadId)
+            {
+                messages.Add(message);
+            }
+        }
+
+        _logger.LogInformation($"Response: {System.Text.Json.JsonSerializer.Serialize(messages)}");
+
+        return Ok(messages);
+    }
 
 
     }

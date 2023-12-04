@@ -1,5 +1,6 @@
 export const environment = {
     production: false,
-    getEndpoint: 'http://192.168.0.165:7190/Chatbot/message/get',
-    postEndpoint: 'http://192.168.0.165:7190/Chatbot/message/post',
+    getEndpoint: 'http://57.138.52.239:7190/Chatbot/message/get',
+    postEndpoint: 'http://57.138.52.239:7190/Chatbot/message/post',
+    getByIdEndpoint: 'http://57.138.52.239:7190/Chatbot/message/getByThreadId'
   };
