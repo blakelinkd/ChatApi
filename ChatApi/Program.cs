@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.WebSockets;
 using StackExchange.Redis;
 using System.Net.WebSockets;
+
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IConnectionMultiplexer>(provider =>
@@ -22,7 +21,16 @@ builder.Services.AddCors(options =>
         builder.WithOrigins("https://blakelink.us") // Replace with your Angular app's URL
                .AllowAnyHeader()
                .AllowAnyMethod()
-               .AllowCredentials(); // Add this if you're using credentials
+               .AllowCredentials();
+    });
+});
+
+// Configure the HTTPS settings
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ConfigureHttpsDefaults(listenOptions =>
+    {
+        listenOptions.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
     });
 });
 
@@ -35,11 +43,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection(); // Remove this line to disable HTTPS redirection
-app.UseCors(MyAllowSpecificOrigins);
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
-app.UseWebSockets();
+
 app.MapControllers();
 
 app.Run();
