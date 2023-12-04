@@ -1,4 +1,4 @@
-namespace ChatApi
+namespace ChatApi.Models
 {
     public class WeatherForecast
     {

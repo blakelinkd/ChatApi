@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ChatApi
+﻿namespace ChatApi.Models
 {
     public class Message
     {
         public string MessageId { get; set; }
         public string ThreadId { get; set; }
         public string SenderId { get; set; }
+        public string userName { get; set; }
         public string RecipientId { get; set; }
         public DateTime Timestamp { get; set; }
         public MessageContent Content { get; set; }

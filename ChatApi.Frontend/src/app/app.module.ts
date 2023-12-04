@@ -4,7 +4,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ChatbotComponent } from './chatbot/chatbot.component';
 import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store'; // Import StoreModule
 import { messageReducer } from './store/message/message.reducer'; // Import your message reducer
 
@@ -18,7 +18,8 @@ import { messageReducer } from './store/message/message.reducer'; // Import your
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    StoreModule.forRoot({ message: messageReducer }) // Add StoreModule to imports
+    StoreModule.forRoot({ message: messageReducer }),
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

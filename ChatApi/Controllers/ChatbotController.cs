@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ChatApi.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 
@@ -17,14 +18,8 @@ namespace ChatApi.Controllers
             _redisDatabase = redisMultiplexer.GetDatabase();
         }
 
-        [HttpGet(Name = "chatbot")]
-        public String Get()
-        {
-            return "Hello World";
-        }
 
-
-        [HttpPost(Name = "message")]
+        [HttpPost("message/post")]
         public IActionResult Post([FromBody] Message message)
         {
             if (message == null || string.IsNullOrEmpty(message.Content?.Text))
@@ -40,25 +35,24 @@ namespace ChatApi.Controllers
 
             return Ok();
         }
-
         [HttpGet("message/get")]
-        public ActionResult<List<Message>> GetMessageQueue()
-        {
-            var messages = new List<Message>();
-            while (_redisDatabase.ListLength("messageQueue") > 0)
-            {
-                var messageString = _redisDatabase.ListRightPop("messageQueue");
-                if (!messageString.IsNullOrEmpty)
-                {
-                    var message = System.Text.Json.JsonSerializer.Deserialize<Message>(messageString);
-                    if (message != null)
-                    {
-                        messages.Add(message);
-                    }
-                }
-            }
+public ActionResult<List<Message>> GetMessageQueue()
+{
+    var messages = new List<Message>();
+    var messageStrings = _redisDatabase.ListRange("messageQueue");
 
-            return Ok(messages);
+    foreach (var messageString in messageStrings)
+    {
+        var message = System.Text.Json.JsonSerializer.Deserialize<Message>(messageString);
+        if (message != null)
+        {
+            messages.Add(message);
         }
+    }
+
+    return Ok(messages);
+}
+
+
     }
 }

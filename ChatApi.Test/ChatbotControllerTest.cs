@@ -6,6 +6,7 @@ using ChatApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Redis;
 using System.Text.Json;
+using ChatApi.Models;
 
 namespace ChatApi.Tests.Controllers
 {
@@ -42,20 +43,6 @@ namespace ChatApi.Tests.Controllers
             // Set up the mock RedisMultiplexer to return the mock Redis database
             redisMultiplexerMock.Setup(multiplexer => multiplexer.GetDatabase(It.IsAny<int>(), It.IsAny<object>()))
                                 .Returns(redisDbMock.Object);
-        }
-
-        [Fact]
-        public void Get_ReturnsHelloWorld()
-        {
-            // Arrange
-            var controller = new ChatbotController(loggerMock.Object, redisMultiplexerMock.Object);
-
-            // Act
-            var result = controller.Get();
-
-            // Assert
-            Assert.IsType<string>(result);
-            Assert.Equal("Hello World", result);
         }
 
         [Fact]
@@ -107,26 +94,20 @@ namespace ChatApi.Tests.Controllers
             // Arrange
             var controller = new ChatbotController(loggerMock.Object, redisMultiplexerMock.Object);
 
-            // Create test messages as serialized JSON strings
-            var testMessages = new List<RedisValue>
+            // Create test messages
+            var testMessages = new List<Message>
     {
-        JsonSerializer.Serialize(new Message { Content = new MessageContent { Text = "Message 1" } }),
-        JsonSerializer.Serialize(new Message { Content = new MessageContent { Text = "Message 2" } }),
-        JsonSerializer.Serialize(new Message { Content = new MessageContent { Text = "Message 3" } })
+        new Message { Content = new MessageContent { Text = "Message 1" } },
+        new Message { Content = new MessageContent { Text = "Message 2" } },
+        new Message { Content = new MessageContent { Text = "Message 3" } }
     };
 
+            // Serialize test messages to JSON strings
+            var serializedMessages = testMessages.Select(message => JsonSerializer.Serialize(message));
+
             // Mock the Redis database to simulate messages in the queue
-            redisDbMock.Setup(db => db.ListLength("messageQueue", CommandFlags.None)).Returns(() => testMessages.Count);
-            redisDbMock.Setup(db => db.ListRightPop("messageQueue", CommandFlags.None))
-                       .Returns(() =>
-                       {
-                           var message = testMessages.LastOrDefault();
-                           if (testMessages.Count > 0)
-                           {
-                               testMessages.RemoveAt(testMessages.Count - 1);
-                           }
-                           return message;
-                       });
+            redisDbMock.Setup(db => db.ListRange("messageQueue", 0, -1, CommandFlags.None))
+                       .Returns(() => serializedMessages.Select(message => (RedisValue)message).ToArray());
 
             // Act
             var actionResult = controller.GetMessageQueue();
@@ -137,8 +118,15 @@ namespace ChatApi.Tests.Controllers
             Assert.NotNull(okResult);
             var resultValue = Assert.IsType<List<Message>>(okResult.Value);
             Assert.Equal(3, resultValue.Count);
+
+            // Verify message content
+            Assert.Equal("Message 1", resultValue[0].Content.Text);
+            Assert.Equal("Message 2", resultValue[1].Content.Text);
+            Assert.Equal("Message 3", resultValue[2].Content.Text);
+
             // Additional assertions as needed
         }
+
 
 
 

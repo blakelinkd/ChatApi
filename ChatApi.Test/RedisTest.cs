@@ -1,11 +1,11 @@
 ﻿using Xunit;
-using ChatApi;
 using StackExchange.Redis;
 using System;
 using Moq;
 using Microsoft.Extensions.Logging;
 using ChatApi.Controllers;
 using System.Text.Json;
+using ChatApi.Models;
 
 namespace ChatApi.Tests.Controllers
 {
@@ -31,6 +31,7 @@ namespace ChatApi.Tests.Controllers
             ResponseTo = null // or a valid message ID if it's a response
         };
 
+        // Todo - Move this test to a Intergration test project
         [Fact]
         public void CanConnectToRedis()
         {
@@ -50,7 +51,7 @@ namespace ChatApi.Tests.Controllers
 
             Assert.Equal(value, retrievedValue);
         }
-
+        
         [Fact]
         public void Post_Message_ShouldEnqueueInRedis()
         {

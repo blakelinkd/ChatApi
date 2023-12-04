@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@ngrx/effects": "^17.0.1",
+    "@ngrx/entity": "^17.0.1",
+    "@ngrx/store": "^17.0.1",
+    "uuid": "^9.0.1"
+  }
+}

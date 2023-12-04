@@ -5,3 +5,9 @@ export interface AppState {
     messages: Message[];
   };
 }
+
+export const initialState: AppState = {
+  chat: {
+    messages: []
+  }
+};

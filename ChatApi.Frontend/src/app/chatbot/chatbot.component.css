@@ -46,3 +46,19 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+.messages {
+    max-height: 500px; /* Adjust this value to fit your layout */
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(155, 155, 155, 0.7) transparent;
+}
+
+.messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background-color: rgba(155, 155, 155, 0.7);
+    border-radius: 4px;
+}
