@@ -18,19 +18,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins, builder =>
     {
-        builder.WithOrigins("https://blakelink.us") // Replace with your Angular app's URL
+        builder.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200") // Add your Angular app's URL
                .AllowAnyHeader()
                .AllowAnyMethod()
                .AllowCredentials();
-    });
-});
-
-// Configure the HTTPS settings
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.ConfigureHttpsDefaults(listenOptions =>
-    {
-        listenOptions.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
     });
 });
 
@@ -43,10 +34,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.UseCors(MyAllowSpecificOrigins);
 app.Run();

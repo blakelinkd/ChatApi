@@ -71,28 +71,7 @@ namespace ChatApi.Controllers
             return messages;
         }
 
-        [HttpGet("message/getByThreadId/{threadId}")]
-    public ActionResult<List<Message>> GetMessagesByThreadId(string threadId)
-    {
-        _logger.LogInformation($"Incoming request to endpoint: /message/getByThreadId/{threadId}");
-
-        var messages = new List<Message>();
-        var messageStrings = _redisDatabase.ListRange("messageQueue");
-
-        foreach (var messageString in messageStrings)
-        {
-            var message = System.Text.Json.JsonSerializer.Deserialize<Message>(messageString);
-            if (message != null && message.ThreadId == threadId)
-            {
-                messages.Add(message);
-            }
-        }
-
-        _logger.LogInformation($"Response: {System.Text.Json.JsonSerializer.Serialize(messages)}");
-
-        return Ok(messages);
-    }
-
+       
 
     }
 }
