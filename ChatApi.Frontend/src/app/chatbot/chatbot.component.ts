@@ -144,7 +144,6 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
       status: '',
       responseTo: ''
     };
-    console.log(JSON.stringify(message));
     // Dispatch the action to create a new message
     this.store.dispatch(MessageActions.createMessage({ message }));
     this.http.post(environment.postEndpoint, message).subscribe();
@@ -182,7 +181,6 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
       .subscribe((messages: Message[]) => {
         // Dispatch the action to load the fetched messages
         this.store.dispatch(MessageActions.loadMessages({ messages }));
-        console.log('messages recieved' + messages);
 
       });
   }
