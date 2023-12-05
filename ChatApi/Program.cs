@@ -30,7 +30,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins, builder =>
     {
-        builder.WithOrigins("https://fondly.ai") // Add your Angular app's URL
+        builder.WithOrigins("https://blakelink.us") // Add your Angular app's URL
                .AllowAnyHeader()
                .AllowAnyMethod()
                .AllowCredentials();
