@@ -1,6 +1,6 @@
 export const environment = {
     production: false,
-    getEndpoint: 'http://localhost/Chatbot/message/get',
-    postEndpoint: 'http://localhost/Chatbot/message/post',
-    getByIdEndpoint: 'http://localhost/Chatbot/message/getByThreadId'
+    getEndpoint: 'https://fondly.ai/Chatbot/message/get',
+    postEndpoint: 'https://fondly.ai/Chatbot/message/post',
+    getByIdEndpoint: 'https://fondly.ai/Chatbot/message/getByThreadId'
   };
