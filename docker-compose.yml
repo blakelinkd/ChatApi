@@ -14,15 +14,15 @@ services:
       - "5000:5000"
     networks:
       - network1
-  proxy:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    ports:
-      - "80:80"
-    networks:
-      - network1
-    links:
-      - api
+  # proxy:
+  #   build:
+  #     context: ./nginx
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "80:80"
+  #   networks:
+  #     - network1
+  #   links:
+  #     - api
 networks:
   network1:
