@@ -168,7 +168,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
       responseTo: ''
     };
     this.store.dispatch(MessageActions.createMessage({ message }));
-    this.http.post(environment.postEndpoint, message).subscribe();
+    // this.http.post(environment.postEndpoint, message).subscribe();
   }
 
   pollMessages() {
