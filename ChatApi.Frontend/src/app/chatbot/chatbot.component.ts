@@ -184,21 +184,26 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     interval(1000)
       .pipe(
         switchMap(() => this.http.get<Message[]>(environment.getEndpoint)),
-        map((newMessages: Message[]) => {
-          // Get the current messages from the app's state
-          let currentMessages: Message[] = [];
-          this.store.select((state: any) => state.message).subscribe(messages => {
-            currentMessages = messages;
+        map((messages: Message[]) => {
+          // Separate the messages from the 'System' user and other users
+          const systemMessages = messages.filter(message => message.userName === 'System');
+          const otherMessages = messages.filter(message => message.userName !== 'System');
+
+          // If there are no system messages, return the other messages
+          if (systemMessages.length === 0) {
+            return otherMessages;
+          }
+
+          // Find the most recent system message
+          const mostRecentSystemMessage = systemMessages.reduce((prev, current) => {
+            return (new Date(prev.timestamp) > new Date(current.timestamp)) ? prev : current;
           });
 
-          // Merge the new messages with the current messages
-          const mergedMessages = [...currentMessages, ...newMessages];
-
-          return mergedMessages.reverse();
+          // Combine the most recent system message with the other messages
+          return [...otherMessages, mostRecentSystemMessage];
         })
       )
       .subscribe((messages: Message[]) => {
-        // Dispatch an action to update the state with the merged messages
         this.store.dispatch(MessageActions.loadMessages({ messages }));
       });
   }
