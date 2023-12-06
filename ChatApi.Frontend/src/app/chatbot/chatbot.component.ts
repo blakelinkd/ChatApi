@@ -177,29 +177,27 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
       .pipe(
         switchMap(() => this.http.get<Message[]>(environment.getEndpoint)),
         map((messages: Message[]) => {
-          // Filter the messages to get only those from the 'System' user
+          // Separate the messages from the 'System' user and other users
           const systemMessages = messages.filter(message => message.userName === 'System');
+          const otherMessages = messages.filter(message => message.userName !== 'System');
 
-          // If there are no system messages, return null
+          // If there are no system messages, return the other messages
           if (systemMessages.length === 0) {
-            return null;
+            return otherMessages;
           }
 
-          // Find the system message with the most recent timestamp
-          const mostRecentMessage = systemMessages.reduce((prev, current) => {
+          // Find the most recent system message
+          const mostRecentSystemMessage = systemMessages.reduce((prev, current) => {
             return (new Date(prev.timestamp) > new Date(current.timestamp)) ? prev : current;
           });
 
-          return [mostRecentMessage];  // Return the most recent message in an array
+          // Combine the most recent system message with the other messages
+          return [...otherMessages, mostRecentSystemMessage];
         })
       )
-      .subscribe((messages: Message[] | null) => {
-        // If messages is not null, dispatch the action to load the fetched message
-        if (messages) {
-          this.store.dispatch(MessageActions.loadMessages({ messages }));
-        }
+      .subscribe((messages: Message[]) => {
+        this.store.dispatch(MessageActions.loadMessages({ messages }));
       });
   }
-
   
 }
