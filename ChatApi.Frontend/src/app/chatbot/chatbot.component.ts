@@ -8,6 +8,7 @@ import { AppState } from '../store/app.state'; // Add this import statement
 import { interval, switchMap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-chatbot',
@@ -168,20 +169,36 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
       responseTo: ''
     };
     this.store.dispatch(MessageActions.createMessage({ message }));
-    // this.http.post(environment.postEndpoint, message).subscribe();
+    this.http.post(environment.postEndpoint, message).subscribe();
   }
+
 
   pollMessages() {
     interval(1000)
       .pipe(
-        // switchMap(() => this.http.get<Message[]>(environment.getByIdEndpoint + '/' + this.threadId))
-        switchMap(() => this.http.get<Message[]>(environment.getEndpoint))
+        switchMap(() => this.http.get<Message[]>(environment.getEndpoint)),
+        map((messages: Message[]) => {
+          // Filter the messages to get only those from the 'System' user
+          const systemMessages = messages.filter(message => message.userName === 'System');
 
+          // If there are no system messages, return null
+          if (systemMessages.length === 0) {
+            return null;
+          }
+
+          // Find the system message with the most recent timestamp
+          const mostRecentMessage = systemMessages.reduce((prev, current) => {
+            return (new Date(prev.timestamp) > new Date(current.timestamp)) ? prev : current;
+          });
+
+          return [mostRecentMessage];  // Return the most recent message in an array
+        })
       )
-      .subscribe((messages: Message[]) => {
-        // Dispatch the action to load the fetched messages
-        this.store.dispatch(MessageActions.loadMessages({ messages }));
-
+      .subscribe((messages: Message[] | null) => {
+        // If messages is not null, dispatch the action to load the fetched message
+        if (messages) {
+          this.store.dispatch(MessageActions.loadMessages({ messages }));
+        }
       });
   }
 
