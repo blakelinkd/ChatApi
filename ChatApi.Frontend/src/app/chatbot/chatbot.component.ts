@@ -181,6 +181,9 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   }
 
   pollMessages() {
+    this.store.select((state: any) => state.message).subscribe(messages => {
+      this.messages = [...messages].reverse();
+    });
     interval(1000)
       .pipe(
         switchMap(() => this.http.get<Message[]>(environment.getEndpoint)),
@@ -203,6 +206,9 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
           return [...otherMessages, mostRecentSystemMessage];
         })
       )
+
+      
+      
       .subscribe((messages: Message[]) => {
         this.store.dispatch(MessageActions.loadMessages({ messages }));
       });

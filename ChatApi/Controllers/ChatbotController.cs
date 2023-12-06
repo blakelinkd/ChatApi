@@ -54,7 +54,14 @@ namespace ChatApi.Controllers
                 var message = System.Text.Json.JsonSerializer.Deserialize<Message>(messageString);
                 if (message != null)
                 {
-                    messages.Add(message);
+                    // Check if the message ID is in the Redis Set 'sentMessages'
+                    if (!_redisDatabase.SetContains("sentMessages", message.MessageId))
+                    {
+                        messages.Add(message);
+
+                        // Add the message ID to the Redis Set 'sentMessages'
+                        _redisDatabase.SetAdd("sentMessages", message.MessageId);
+                    }
                 }
             }
 
@@ -79,7 +86,7 @@ namespace ChatApi.Controllers
             return messages;
         }
 
-       
+
 
     }
 }
