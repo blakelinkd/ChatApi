@@ -33,11 +33,11 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.messageForm = this.fb.group({
       newMessage: ['', Validators.required]
     });
-  
+
     this.nameForm = this.fb.group({
       userName: ['', Validators.required]
     });
-  
+
   }
 
   ngAfterViewChecked() {
@@ -57,12 +57,12 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
       messagesContainer.addEventListener('scroll', () => {
         this.userHasScrolled = true;
       });
-    if (!this.systemMessageSent) {
-      this.addSystemMessage('Welcome! You can set your username by typing "/name [your desired name]".');
-      this.systemMessageSent = true;
+      if (!this.systemMessageSent) {
+        this.addSystemMessage('Welcome! You can set your username by typing "/name [your desired name]".');
+        this.systemMessageSent = true;
+      }
     }
-    }
-    
+
     console.info("User has entered the chatbot component")
     if (!localStorage.getItem('senderId')) {
       const senderId = uuidv4();
@@ -70,11 +70,11 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     }
     this.pollMessages();
 
-  this.store.select((state: any) => state.message).subscribe(messages => {
-    this.messages = [...messages].reverse();
+    this.store.select((state: any) => state.message).subscribe(messages => {
+      this.messages = [...messages].reverse();
 
-    
-  });
+
+    });
   }
 
   getUserIdColor(userId: string): string {
@@ -82,21 +82,21 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     for (let i = 0; i < userId.length; i++) {
       sum += userId.charCodeAt(i);
     }
-  
+
     // Generate red, green, and blue components in the range 0-255
     const red = sum % 256;
     const green = (sum * 2) % 256;
     const blue = (sum * 3) % 256;
-  
+
     // Ensure that the sum of the components is above a threshold (384 in this case)
     if (red + green + blue < 384) {
       return this.getUserIdColor(userId + 'a');
     }
-  
+
     // Convert the components to hexadecimal strings and pad them with zeros if necessary
     return '#' + red.toString(16).padStart(2, '0') + green.toString(16).padStart(2, '0') + blue.toString(16).padStart(2, '0');
   }
-  
+
   sendMessage() {
     console.info("User has sent a message")
     if (this.messageForm.valid) {
@@ -107,7 +107,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
       alert('Please enter a message');
       return;
     }
-  
+
     // Check if the message starts with "/login"
     if (this.newMessage.startsWith('/login')) {
       const parts = this.newMessage.split(' ');
@@ -118,17 +118,25 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
         return;
       }
     }
-  
+
     // Check if the message starts with "/name"
     if (this.newMessage.startsWith('/name')) {
       const parts = this.newMessage.split(' ');
       if (parts.length === 2) {
+        const oldName = localStorage.getItem('userName');
+        const senderId = localStorage.getItem('senderId') || uuidv4();
         localStorage.setItem('userName', parts[1]);
-        this.addSystemMessage(`Name changed to ${parts[1]}.`);
+
+        if (oldName) {
+          this.addSystemMessage(`${oldName} changed their name to ${parts[1]}.`);
+        } else {
+          this.addSystemMessage(`${senderId} changed their name to ${parts[1]}.`);
+        }
+
         return;
       }
     }
-  
+
     const senderId = localStorage.getItem('senderId') || uuidv4();
     const userName = localStorage.getItem('userName') || '';
     const message: Message = {
@@ -148,7 +156,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     // Dispatch the action to create a new message
     this.store.dispatch(MessageActions.createMessage({ message }));
     this.http.post(environment.postEndpoint, message).subscribe();
-  
+
     // Clear the newMessage property to reset the input field
     this.newMessage = '';
   }
@@ -199,5 +207,5 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
         this.store.dispatch(MessageActions.loadMessages({ messages }));
       });
   }
-  
+
 }
