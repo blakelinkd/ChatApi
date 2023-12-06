@@ -194,7 +194,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
           // Merge the new messages with the current messages
           const mergedMessages = [...currentMessages, ...newMessages];
 
-          return mergedMessages;
+          return mergedMessages.reverse();
         })
       )
       .subscribe((messages: Message[]) => {
