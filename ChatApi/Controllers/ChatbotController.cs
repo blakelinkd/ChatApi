@@ -35,6 +35,14 @@ namespace ChatApi.Controllers
 
             return Ok();
         }
+
+        // endpoint to say hello
+        [HttpGet("hello")]
+        public ActionResult<string> Get()
+        {
+            return "Hello from the Chatbot API!";
+        }
+
         [HttpGet("message/get")]
         public ActionResult<List<Message>> GetMessageQueue()
         {

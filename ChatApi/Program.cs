@@ -3,6 +3,7 @@ using StackExchange.Redis;
 using System.Net.WebSockets;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://*:5000");
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 // Add services to the container.

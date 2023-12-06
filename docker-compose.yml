@@ -1,6 +1,28 @@
-version: '7.2'
+version: '3'
 services:
   redis:
-    image: "redis:latest"
+    image: redis
     ports:
       - "6379:6379"
+    networks:
+      - network1
+  api:
+    build:
+      context: ./ChatApi
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    networks:
+      - network1
+  proxy:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - network1
+    links:
+      - api
+networks:
+  network1:
