@@ -172,7 +172,6 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.http.post(environment.postEndpoint, message).subscribe();
   }
 
-
   pollMessages() {
     interval(1000)
       .pipe(
