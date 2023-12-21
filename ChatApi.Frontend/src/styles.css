@@ -1,2 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
 @import url('app/app.component.css');
+
+.resume-link {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+  .resume-link:hover {
+    background-color: #0056b3;
+  }
+
+
