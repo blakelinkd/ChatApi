@@ -1,0 +1,4 @@
+[[headers]]
+  for = "/assets/test.json"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
