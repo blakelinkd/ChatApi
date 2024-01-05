@@ -1,4 +1,4 @@
-[
+{ "messages": [
     {
       "messageId": "string",
       "threadId": "string",
@@ -38,3 +38,4 @@
       "responseTo": "string"
     }
   ]
+}
