@@ -1,0 +1,38 @@
+{
+    "chatSessionId": "12345",
+    "participants": [
+      {
+        "userId": "user001",
+        "userName": "Alice",
+        "userRole": "customer"
+      },
+      {
+        "userId": "user002",
+        "userName": "Bob",
+        "userRole": "support"
+      }
+    ],
+    "messages": [
+      {
+        "messageId": "msg001",
+        "senderId": "user001",
+        "text": "Hello, I need help with my account.",
+        "timestamp": "2024-01-05T10:15:30Z"
+      },
+      {
+        "messageId": "msg002",
+        "senderId": "user002",
+        "text": "Hi Alice, sure, I can help you with that. What seems to be the issue?",
+        "timestamp": "2024-01-05T10:16:00Z"
+      },
+      {
+        "messageId": "msg003",
+        "senderId": "user001",
+        "text": "I'm having trouble logging in.",
+        "timestamp": "2024-01-05T10:17:15Z"
+      }
+    ],
+    "sessionStatus": "active",
+    "startTime": "2024-01-05T10:15:00Z",
+    "endTime": null
+}
