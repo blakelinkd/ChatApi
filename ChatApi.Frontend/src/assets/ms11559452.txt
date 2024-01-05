@@ -1,0 +1,5 @@
+﻿{
+  "Description": "Domain ownership verification file for Microsoft 365 - place in the website root",
+  "Domain": "blakelink.us",
+  "Id": "4eefd888-bb29-4468-9a77-bbbd574770dd"
+}
