@@ -1,0 +1,109 @@
+﻿@page "/"
+@using System.Globalization
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Blazor.Client.Services
+@implements IDisposable
+@inject HttpClient HttpClient
+@inject ILogger<Home> Logger
+@inject MyStateService myState
+@rendermode InteractiveServer
+
+
+
+<QuickGrid Items="@people">
+    <PropertyColumn Property="@(p => p.PersonId)" Sortable="true" />
+    <PropertyColumn Property="@(p => p.Name)" Sortable="true" />
+    <PropertyColumn Property="@(p => p.PromotionDate)" Format="yyyy-MM-dd" Sortable="true" />
+</QuickGrid>
+
+<p>@myState.text</p>
+
+@code {
+    public class ChatMessage
+    {
+        public string MessageId { get; set; }
+        public string ThreadId { get; set; }
+        public string SenderId { get; set; }
+        public string UserName { get; set; }
+        public string RecipientId { get; set; }
+        public DateTime Timestamp { get; set; }
+        public Content Content { get; set; }
+        public string Status { get; set; }
+        public string ResponseTo { get; set; }
+    }
+
+    public class Content
+    {
+        public string Text { get; set; }
+        public List<Attachment> Attachments { get; set; }
+    }
+
+    public class Attachment
+    {
+        public string Type { get; set; }
+        public string Url { get; set; }
+    }
+
+    private record Person(int PersonId, string Name, DateOnly PromotionDate);
+    public String responseText { get; set; }
+    public void UpdateResponseText(string text)
+    {
+        responseText = text;
+    }
+
+    private IQueryable<Person> people = new[]
+    {
+        new Person(10895, "Jean Martin", new DateOnly(1985, 3, 16)),
+        new Person(10944, "António Langa", new DateOnly(1991, 12, 1)),
+        new Person(11203, "Julie Smith", new DateOnly(1958, 10, 10)),
+        new Person(11205, "Nur Sari", new DateOnly(1922, 4, 27)),
+        new Person(11898, "Jose Hernandez", new DateOnly(2011, 5, 3)),
+        new Person(12130, "Kenji Sato", new DateOnly(2004, 1, 9)),
+    }.AsQueryable();
+
+    private HttpResponseMessage response;
+    private bool isDataFetched = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await HttpClient.GetAsync("http://localhost:5000/Chatbot/message/get");
+            var responseText = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                // Update the state in MyStateService based on the HTTP response
+                myState.UpdateShowData(this, responseText);
+            }
+            else
+            {
+                myState.UpdateShowData(this, responseText);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error occurred while fetching data.");
+            myState.UpdateShowData(this, responseText);
+        }
+    }
+
+    void ShowDataChanged(ComponentBase sender, bool showData)
+    {
+        // Additional logic can be added here if needed
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    public void Dispose()
+    {
+    }
+
+
+
+
+
+}

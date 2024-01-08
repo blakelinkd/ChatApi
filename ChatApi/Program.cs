@@ -2,7 +2,6 @@ using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.WebSockets;
 using StackExchange.Redis;
 using System.Net.WebSockets;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://*:5000");
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -30,12 +29,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins, builder =>
     {
-        builder.WithOrigins("https://blakelink.us") // Add your Angular app's URL
+        builder.WithOrigins("https://blakelink.us", "https://localhost:7244/") // Add your Angular app's URL
                .AllowAnyHeader()
                .AllowAnyMethod()
                .AllowCredentials();
     });
 });
+
 
 var app = builder.Build();
 
