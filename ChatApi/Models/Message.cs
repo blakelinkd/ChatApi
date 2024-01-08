@@ -8,20 +8,24 @@
         public string userName { get; set; }
         public string RecipientId { get; set; }
         public DateTime Timestamp { get; set; }
-        public MessageContent Content { get; set; }
+
+        // Flattened properties from MessageContent
+        public string Text { get; set; } // Assuming you only need the text
+
+        // Handling Attachments
+        // If you need to preserve the list of attachments, you have several options:
+        // Option 1: Serialize the list of attachments into a single string
+        public string AttachmentsJson { get; set; }
+
+        // Option 2: Store only the first attachment, if that's sufficient for your use case
+        public string FirstAttachmentType { get; set; }
+        public string FirstAttachmentUrl { get; set; }
+
+        // ... other properties from Message
         public string Status { get; set; }
         public string ResponseTo { get; set; }
     }
 
-    public class MessageContent
-    {
-        public string Text { get; set; }
-        public List<Attachment> Attachments { get; set; }
-    }
-
-    public class Attachment
-    {
-        public string Type { get; set; }
-        public string Url { get; set; }
-    }
+    // If you choose to serialize the attachments, you don't need the Attachment class.
+    // If you choose to store the first attachment only, then also you won't need the Attachment class.
 }

@@ -1,25 +1,35 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Blazor.Client.Models;
+using System.Text.Json;
 
 namespace Blazor.Client.Services
 {
     public class MyStateService
     {
-        public bool ShowData { get; private set; }
-        public String text { get; set; }
-        // Event to notify subscribers of state changes.
-        public event Action<ComponentBase, String>? ShowDataChanged;
+        public List<ChatMessage> Messages = new List<ChatMessage>();
 
-        // Public method to update the state.
-        public void UpdateShowData(ComponentBase source, String responseText)
+        public void UpdateChatMessages(ComponentBase source, List<ChatMessage> responseText)
         {
-            text = responseText;
-            NotifyShowDataChanged(source, responseText);
+            try
+            {
+                Messages = responseText;
+            }
+            catch (JsonException e)
+            {
+                // Log the exception or handle it as needed
+                Messages = new List<ChatMessage>(); // Fallback to empty array in case of deserialization failure
+            }
+
+            NotifyChatMessagesChanged(source);
         }
 
         // Private method to trigger the event.
-        private void NotifyShowDataChanged(ComponentBase source, String responseText)
+        private void NotifyChatMessagesChanged(ComponentBase source)
         {
-            ShowDataChanged?.Invoke(source, responseText);
+            ChatMessagesChanged?.Invoke(source, Messages);
         }
+
+        // Event to notify subscribers of chat message changes.
+        public event Action<ComponentBase, List<ChatMessage>?>? ChatMessagesChanged;
     }
 }

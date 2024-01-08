@@ -2,6 +2,8 @@
 @using System.Globalization
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Blazor.Client.Services
+@using Blazor.Client.Models
+@using System.Text.Json
 @implements IDisposable
 @inject HttpClient HttpClient
 @inject ILogger<Home> Logger
@@ -16,33 +18,27 @@
     <PropertyColumn Property="@(p => p.PromotionDate)" Format="yyyy-MM-dd" Sortable="true" />
 </QuickGrid>
 
-<p>@myState.text</p>
+<div class="container mt-3">
+    <div class="list-group">
+        @foreach (var message in myState.Messages)
+        {
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">@(message.userName ?? "Unknown User")</h5>
+                    <small>@(message.Timestamp.ToString("g") ?? "Unknown time")</small>
+                </div>
+                <p class="mb-1">@(message.Text ?? "No message content")</p>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+
 
 @code {
-    public class ChatMessage
-    {
-        public string MessageId { get; set; }
-        public string ThreadId { get; set; }
-        public string SenderId { get; set; }
-        public string UserName { get; set; }
-        public string RecipientId { get; set; }
-        public DateTime Timestamp { get; set; }
-        public Content Content { get; set; }
-        public string Status { get; set; }
-        public string ResponseTo { get; set; }
-    }
 
-    public class Content
-    {
-        public string Text { get; set; }
-        public List<Attachment> Attachments { get; set; }
-    }
-
-    public class Attachment
-    {
-        public string Type { get; set; }
-        public string Url { get; set; }
-    }
 
     private record Person(int PersonId, string Name, DateOnly PromotionDate);
     public String responseText { get; set; }
@@ -61,49 +57,64 @@
         new Person(12130, "Kenji Sato", new DateOnly(2004, 1, 9)),
     }.AsQueryable();
 
-    private HttpResponseMessage response;
-    private bool isDataFetched = false;
+    private System.Threading.Timer pollingTimer;
+    //private List<Message> messages = new List<Message>();
 
-    protected override async Task OnInitializedAsync()
+
+    protected override void OnInitialized()
     {
-        try
-        {
-            var response = await HttpClient.GetAsync("http://localhost:5000/Chatbot/message/get");
-            var responseText = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                // Update the state in MyStateService based on the HTTP response
-                myState.UpdateShowData(this, responseText);
-            }
-            else
-            {
-                myState.UpdateShowData(this, responseText);
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "An error occurred while fetching data.");
-            myState.UpdateShowData(this, responseText);
-        }
+        // Set up the timer to poll every 1000 milliseconds (1 second)
+        pollingTimer = new System.Threading.Timer(async _ => await PollMessages(), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+        base.OnInitialized();
     }
 
-    void ShowDataChanged(ComponentBase sender, bool showData)
+
+    void MessageListChanged(ComponentBase sender, string message)
     {
         // Additional logic can be added here if needed
         StateHasChanged();
     }
 
-    protected override void OnInitialized()
+
+    private async Task PollMessages()
     {
-        base.OnInitialized();
+        try
+        {
+            // Fetch messages
+            var fetchedMessages = await HttpClient.GetFromJsonAsync<List<ChatMessage>>("http://localhost:5000/Chatbot/message/get");
+
+            // Process messages
+            var systemMessages = fetchedMessages.Where(m => m.userName == "System").ToList();
+            var otherMessages = fetchedMessages.Where(m => m.userName != "System").ToList();
+
+            ChatMessage mostRecentSystemMessage = null;
+            if (systemMessages.Any())
+            {
+                mostRecentSystemMessage = systemMessages.Aggregate((prev, current) =>
+                    (prev.Timestamp > current.Timestamp) ? prev : current);
+            }
+
+            var combinedMessages = mostRecentSystemMessage != null ? otherMessages.Concat(new[] { mostRecentSystemMessage }) : otherMessages;
+            myState.Messages = combinedMessages.ToList();
+            StateHasChanged();
+            // print the .Text of all myState.Messages elements
+            foreach (var message in myState.Messages)
+            {
+                Console.WriteLine(message.Text);
+            }
+            // Update the state with the new messages
+
+            // If you're using a more complex state management, dispatch the messages here
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions
+        }
     }
 
     public void Dispose()
     {
+        pollingTimer?.Dispose();
     }
-
-
-
-
 
 }

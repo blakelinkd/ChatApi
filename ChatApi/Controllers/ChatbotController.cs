@@ -22,12 +22,12 @@ namespace ChatApi.Controllers
         [HttpPost("message/post")]
         public IActionResult Post([FromBody] Message message)
         {
-            if (message == null || string.IsNullOrEmpty(message.Content?.Text))
+            if (message == null || string.IsNullOrEmpty(message.Text))
             {
                 return BadRequest();
             }
 
-            _logger.LogInformation(message.Content.Text);
+            _logger.LogInformation(message.Text);
 
             // Serialize the Message object to a string (JSON) before storing in Redis
             var messageString = System.Text.Json.JsonSerializer.Serialize(message);
