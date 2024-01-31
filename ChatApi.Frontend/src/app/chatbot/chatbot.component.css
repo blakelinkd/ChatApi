@@ -63,9 +63,10 @@ button:hover {
     border-radius: 4px;
 }
 
-@media screen and (max-width: 768px) { /* Adjust the max-width as needed */
-    .chatbox {
-        width: 95%;
-        margin: 0 auto; /* Center the chatbox */
-    }
+.chat {
+    width: 50%;
 }
+.chat {
+    width: 50%;
+}
+
