@@ -62,3 +62,10 @@ button:hover {
     background-color: rgba(155, 155, 155, 0.7);
     border-radius: 4px;
 }
+
+@media screen and (max-width: 768px) { /* Adjust the max-width as needed */
+    .chatbox {
+        width: 95%;
+        margin: 0 auto; /* Center the chatbox */
+    }
+}
