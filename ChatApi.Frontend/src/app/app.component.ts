@@ -8,7 +8,7 @@ import { Meta } from '@angular/platform-browser';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'Experienced .NET Developer for Hire';
+  title = 'Experienced Frontend Developer - Blake Link';
 
   constructor(private titleService: Title, private metaService: Meta) {}
 
