@@ -45,14 +45,16 @@ body {
       margin-top: 3rem;
     }
     
-    .container {
-      max-width: 40%;
-      background-color: #121212aa;
+    
+}
 
-    }
+.container {
+  max-width: 40%;
+  background-color: #121212aa;
+
+}
 
 
-    .chat {
-      max-width: auto;
-    }
+.chat {
+  max-width: auto;
 }
