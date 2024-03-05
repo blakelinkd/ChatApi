@@ -38,23 +38,34 @@ body {
     background-color: #0056b3;
   }
 
+
+  .container {
+    max-width: 40%;
+    background-color: #121212aa;
+  
+  }
+  
+  
+  .chat {
+    max-width: auto;
+  }
+
   @media screen and (min-width: 768px) {
     .mainLayout {
       display: flex;
       flex-direction: row;
       margin-top: 3rem;
     }
+
+    .container {
+      max-width: 90%;
+    }
+
+    .chat {
+      max-width: 90%;
+    }
     
     
 }
 
-.container {
-  max-width: 40%;
-  background-color: #121212aa;
 
-}
-
-
-.chat {
-  max-width: auto;
-}
