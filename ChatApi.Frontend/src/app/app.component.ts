@@ -19,13 +19,13 @@ export class AppComponent implements OnInit {
     // Update meta description with a concise summary of your professional skills and offerings
     this.metaService.updateTag({
       name: 'description',
-      content: 'Highly skilled .NET Developer with extensive experience in building robust web applications. Available for freelance and full-time opportunities.'
+      content: 'Highly skilled ColdFusion, Python - Web Developer with extensive experience in building robust web applications. Available for freelance and full-time opportunities.'
     });
 
     // Include relevant keywords to improve discoverability
     this.metaService.updateTag({
       name: 'keywords',
-      content: '.NET, .NET Developer, Freelance Developer, Software Engineer, ASP.NET, C#, Angular, Web Development, Hiring, Job Search'
+      content: 'ColdFusion, Python, .NET, .NET Developer, Freelance Developer, Software Engineer, ASP.NET, C#, Angular, Web Development, Hiring, Job Search'
     });
   }
 }
