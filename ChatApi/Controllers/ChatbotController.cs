@@ -33,16 +33,16 @@ namespace ChatApi.Controllers
             }
         }
 
-
         [HttpPost("message/post")]
         public IActionResult Post([FromBody] Message message)
         {
             if (message == null || string.IsNullOrEmpty(message.Text))
             {
+                _logger.LogWarning("Received a bad request with null or empty message text.");
                 return BadRequest();
             }
 
-            _logger.LogInformation(message.Text);
+            _logger.LogInformation($"Received message: {message.Text}");
 
             // Serialize the Message object to a string (JSON) before storing in Redis
             var messageString = System.Text.Json.JsonSerializer.Serialize(message);
