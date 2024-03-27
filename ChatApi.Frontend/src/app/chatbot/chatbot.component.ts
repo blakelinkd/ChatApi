@@ -98,50 +98,68 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   }
 
   sendMessage() {
-    console.info("User has sent a message");
+    console.info("User has sent a message")
     if (this.messageForm.valid) {
       this.newMessage = this.messageForm.value.newMessage;
       this.messageForm.reset();
-    } else {
+    }
+    else {
       alert('Please enter a message');
       return;
     }
-  
+
+    // Check if the message starts with "/login"
+    if (this.newMessage.startsWith('/login')) {
+      const parts = this.newMessage.split(' ');
+      if (parts.length === 3 && parts[1] === 'blake' && parts[2] === 'MustardAndBuns') {
+        localStorage.setItem('senderId', '4242');
+        localStorage.setItem('userName', 'Blake');
+        this.addSystemMessage('Login successful.');
+        return;
+      }
+    }
+
+    // Check if the message starts with "/name"
+    if (this.newMessage.startsWith('/name')) {
+      const parts = this.newMessage.split(' ');
+      if (parts.length === 2) {
+        const oldName = localStorage.getItem('userName');
+        const senderId = localStorage.getItem('senderId') || uuidv4();
+        localStorage.setItem('userName', parts[1]);
+
+        if (oldName) {
+          this.addSystemMessage(`${oldName} changed their name to ${parts[1]}.`);
+        } else {
+          this.addSystemMessage(`${senderId} changed their name to ${parts[1]}.`);
+        }
+
+        return;
+      }
+    }
+
     const senderId = localStorage.getItem('senderId') || uuidv4();
     const userName = localStorage.getItem('userName') || '';
-    
-    // Adjust the object to use camelCase properties to match the TypeScript `Message` model
-    const message: Message = { // Ensure this `Message` type is imported at the top of your file
+    const message: Message = {
       messageId: uuidv4(),
       senderId: senderId,
       content: {
         text: this.newMessage,
-        attachments: [] // Assuming your `Message` model defines `content` that includes `text` and possibly `attachments`
+        attachments: [] // Set attachments to an empty array if there are no attachments
       },
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString(), // Use the current date and time as the timestamp
       threadId: this.threadId,
       userName: userName,
       recipientId: '',
       status: '',
-      responseTo: '',
-      // Ensure any additional required properties by your `Message` type are included here
+      responseTo: ''
     };
-  
+    // Dispatch the action to create a new message
     this.store.dispatch(MessageActions.createMessage({ message }));
-  
-    this.http.post(environment.postEndpoint, message).subscribe({
-      next: (response) => {
-        console.log('Message sent successfully', response);
-      },
-      error: (error) => {
-        console.error('Error sending message:', error);
-      }
-    });
-  
-    // Clear the newMessage field
+    this.http.post(environment.postEndpoint, message).subscribe();
+
+    // Clear the newMessage property to reset the input field
     this.newMessage = '';
   }
-  
 
   addSystemMessage(content: string) {
     const message: Message = {
