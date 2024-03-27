@@ -36,6 +36,8 @@ namespace ChatApi.Controllers
         [HttpPost("message/post")]
         public IActionResult Post([FromBody] Message message)
         {
+            _logger.LogInformation($"HOLY BUTTS! {message.Text}");
+
             if (message == null || string.IsNullOrEmpty(message.Text))
             {
                 _logger.LogWarning("Received a bad request with null or empty message text.");
