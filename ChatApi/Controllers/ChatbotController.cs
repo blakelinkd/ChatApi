@@ -36,7 +36,7 @@ namespace ChatApi.Controllers
         [HttpPost("message/post")]
         public IActionResult Post([FromBody] Message message)
         {
-            _logger.LogInformation($"Received POST request with payload: {JsonConvert.SerializeObject(message)}");
+            _logger.LogInformation($"Received POST request with payload: {message}");
 
 
             if (message == null || string.IsNullOrEmpty(message.Text))
