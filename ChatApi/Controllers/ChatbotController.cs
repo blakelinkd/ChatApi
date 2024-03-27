@@ -15,7 +15,22 @@ namespace ChatApi.Controllers
         public ChatbotController(ILogger<ChatbotController> logger, IConnectionMultiplexer redisMultiplexer)
         {
             _logger = logger;
-            _redisDatabase = redisMultiplexer.GetDatabase();
+
+            try
+            {
+                _redisDatabase = redisMultiplexer.GetDatabase();
+                _logger.LogInformation("Connected to Redis successfully.");
+            }
+            catch (RedisConnectionException ex)
+            {
+                _logger.LogError("Error connecting to Redis: {Message}", ex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Unexpected error: {Message}", ex.Message);
+                throw;
+            }
         }
 
 
