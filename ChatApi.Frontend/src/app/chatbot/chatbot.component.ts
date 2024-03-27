@@ -98,16 +98,15 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   }
 
   sendMessage() {
-    console.info("User has sent a message")
+    console.info("User has sent a message");
     if (this.messageForm.valid) {
       this.newMessage = this.messageForm.value.newMessage;
       this.messageForm.reset();
-    }
-    else {
+    } else {
       alert('Please enter a message');
       return;
     }
-
+  
     // Check if the message starts with "/login"
     if (this.newMessage.startsWith('/login')) {
       const parts = this.newMessage.split(' ');
@@ -118,7 +117,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
         return;
       }
     }
-
+  
     // Check if the message starts with "/name"
     if (this.newMessage.startsWith('/name')) {
       const parts = this.newMessage.split(' ');
@@ -126,53 +125,67 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
         const oldName = localStorage.getItem('userName');
         const senderId = localStorage.getItem('senderId') || uuidv4();
         localStorage.setItem('userName', parts[1]);
-
+  
         if (oldName) {
           this.addSystemMessage(`${oldName} changed their name to ${parts[1]}.`);
         } else {
           this.addSystemMessage(`${senderId} changed their name to ${parts[1]}.`);
         }
-
+  
         return;
       }
     }
-
+  
     const senderId = localStorage.getItem('senderId') || uuidv4();
     const userName = localStorage.getItem('userName') || '';
     const message: Message = {
       messageId: uuidv4(),
       senderId: senderId,
-      content: {
-        text: this.newMessage,
-        attachments: [] // Set attachments to an empty array if there are no attachments
-      },
-      timestamp: new Date().toISOString(), // Use the current date and time as the timestamp
       threadId: this.threadId,
       userName: userName,
       recipientId: '',
+      timestamp: new Date().toISOString(),
+      text: this.newMessage,
+  
+      // Handling Attachments
+      // Option 1: Serialize the list of attachments into a single string
+      // attachmentsJson: JSON.stringify([]),
+  
+      // Option 2: Store only the first attachment, if that's sufficient for your use case
+      // firstAttachmentType: '',
+      // firstAttachmentUrl: '',
+  
       status: '',
       responseTo: ''
     };
+  
     // Dispatch the action to create a new message
     this.store.dispatch(MessageActions.createMessage({ message }));
     this.http.post(environment.postEndpoint, message).subscribe();
-
+  
     // Clear the newMessage property to reset the input field
     this.newMessage = '';
   }
+  
 
   addSystemMessage(content: string) {
     const message: Message = {
       messageId: uuidv4(),
       senderId: 'system',
-      content: {
-        text: content,
-        attachments: []
-      },
-      timestamp: new Date().toISOString(),
       threadId: this.threadId,
       userName: 'System',
       recipientId: '',
+      timestamp: new Date().toISOString(),
+      text: content,
+  
+      // Handling Attachments
+      // Option 1: Serialize the list of attachments into a single string
+      // attachmentsJson: JSON.stringify([]),
+  
+      // Option 2: Store only the first attachment, if that's sufficient for your use case
+      // firstAttachmentType: '',
+      // firstAttachmentUrl: '',
+  
       status: '',
       responseTo: ''
     };
