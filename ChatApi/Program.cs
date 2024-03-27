@@ -2,6 +2,10 @@ using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.WebSockets;
 using StackExchange.Redis;
 using System.Net.WebSockets;
+using System.Text.Json;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://*:5000");
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -25,6 +29,11 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(provider =>
     var configuration = builder.Configuration.GetConnectionString("RedisConnection");
     return ConnectionMultiplexer.Connect(configuration);
 });
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins, builder =>
