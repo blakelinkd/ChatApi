@@ -36,6 +36,8 @@ namespace ChatApi.Controllers
 [HttpPost("message/post")]
 public IActionResult Post([FromBody] Message message)
 {
+    _logger.LogInformation($"Request Path: {Request.Path}");
+
     if (!ModelState.IsValid)
     {
         _logger.LogError("Invalid model state: {Errors}", ModelState.Values.SelectMany(v => v.Errors));
